@@ -2,59 +2,74 @@
 
 AI-powered facial analysis and aesthetic recommendation system (React + Node + Python + SQL)
 
-## Opis
+## Description
 
-dream_aesthetics je full-stack aplikacija koja korisnicima omogućava da uploaduju fotografiju svog lica radi analize estetskih karakteristika pomoću veštačke inteligencije. Na osnovu analize sistema (otapostazija, bore, mladeži, simetrija, akne), korisniku se nude potencijalni estetski tretmani i preporuke klinika.
+**dream_aesthetics** is a full-stack application that allows users to upload a photo of their face for aesthetic analysis using artificial intelligence. Based on the analysis results (prominent ears, wrinkles, moles, symmetry, acne), the system suggests potential aesthetic treatments and recommends nearby clinics.
 
-## Tehnologije
+## Technologies
 
 - Frontend: React
 - Backend: Node.js + Express
-- Baza podataka: MySQL ili PostgreSQL
-- AI servis: Python (Flask ili FastAPI)
-- ORM: Sequelize ili TypeORM
-- Autentikacija: JWT
-- Verzija koda: Git + GitHub
+- Database: MySQL or PostgreSQL
+- AI Service: Python (Flask or FastAPI)
+- ORM: Sequelize or TypeORM
+- Authentication: JWT
+- Version Control: Git + GitHub
 
-## Struktura projekta
+## Project Structure
 
+```
 dream_aesthetics/
 ├── backend/         # Node.js API server
-├── frontend/        # React aplikacija
-├── ai_service/      # Python AI servis za analizu slike
-├── database/        # SQL skripte i dijagrami
-├── README.md        # Dokumentacija
+├── frontend/        # React application
+├── ai_service/      # Python AI service for image analysis
+├── database/        # SQL scripts and diagrams
+├── README.md        # Documentation
+```
 
-## Funkcionalnosti
+## Features
 
-- Registracija i login sa više tipova korisnika (korisnik, administrator)
-- Upload fotografije lica
-- AI analiza: klempavost (otapostazija), mladeži, akne, bore, simetrija
-- Preporuka tretmana na osnovu rezultata
-- Pretraga i filtriranje estetskih klinika
-- Komentari korisnika na klinike
-- Administrator upravlja klinikama i tretmanima
-- Responsive dizajn
+- User registration and login with multiple user roles (user, admin)
+- Face image upload
+- AI-based facial analysis: ear prominence, moles, acne, wrinkles, facial symmetry
+- Treatment recommendations based on analysis results
+- Clinic search and filtering
+- User comments on clinics
+- Admin dashboard for managing clinics and treatments
+- Responsive design
 
-## Pokretanje projekta lokalno
+## Running the Project Locally
 
-### 1. Kloniranje repozitorijuma
+### 1. Clone the repository
+
+```
 git clone https://github.com/stefanoknez/dream_aesthetics.git
 cd dream_aesthetics
+```
 
-### 2. Instalacija backend zavisnosti
+### 2. Install backend dependencies
+
+```
 cd backend
 npm install
+```
 
-### 3. Instalacija frontend zavisnosti
+### 3. Install frontend dependencies
+
+```
 cd ../frontend
 npm install
+```
 
-### 4. Pokretanje AI servisa
+### 4. Run the AI service
+
+```
 cd ../ai_service
 pip install -r requirements.txt
 python app.py
+```
 
-## Kontakt
-Autor: Stefan Knežević  
-GitHub: https://github.com/stefanoknez
+## Contact
+
+Author: Stefan Knežević  
+GitHub: [https://github.com/stefanoknez](https://github.com/stefanoknez)
