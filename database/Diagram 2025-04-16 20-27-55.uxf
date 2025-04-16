@@ -1,0 +1,97 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>170</x><y>160</y><w>260</w><h>90</h></coordinates><panel_attributes>User
+--
+	•	id: int
+	•	username: string
+	•	password: string
+	•	role: string {ADMIN, USER, CLINIC_ADMIN}</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>70</y><w>280</w><h>110</h></coordinates><panel_attributes>AppointmentRequest
+--
+	•	id: int
+	•	user_id: int (FK → User.id)
+	•	clinic_id: int (FK → Clinic.id)
+	•	datetime: timestamp
+	•	status: string {pending, confirmed, declined...}</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>950</x><y>80</y><w>210</w><h>150</h></coordinates><panel_attributes>Clinic
+--
+• id: int  
+• name: string  
+• description: text  
+• city_id: int (FK → City.id)  
+• address: string  
+• phone: string  
+• email: string  
+• website: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>950</x><y>340</y><w>210</w><h>90</h></coordinates><panel_attributes>City
+--
+• id: int  
+• name: string  
+• postal_code: string  
+• country: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>460</x><y>430</y><w>210</w><h>90</h></coordinates><panel_attributes>Photo
+--
+• id: int  
+• user_id: int (FK → User.id)  
+• filename: string  
+• uploaded_at: timestamp</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>210</x><y>610</y><w>210</w><h>170</h></coordinates><panel_attributes>AnalysisResult
+--
+• id: int  
+• photo_id: int (FK → Photo.id)  
+• ear_distance: float  
+• mole_count: int  
+• acne_detected: boolean  
+• wrinkle_score: float  
+• botox_recommended: boolean  
+• face_symmetry: float  
+• generated_at: timestamp</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>960</x><y>530</y><w>210</w><h>90</h></coordinates><panel_attributes>Treatment
+--
+• id: int  
+• name: string  
+• description: text  
+• applicable_for: string[]</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>590</x><y>620</y><w>280</w><h>110</h></coordinates><panel_attributes>Recommendation
+--
+• id: int  
+• analysis_result_id: int (FK → AnalysisResult.id)  
+• treatment_id: int (FK → Treatment.id)  
+• relevance_score: float  
+• notes: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>590</x><y>260</y><w>210</w><h>110</h></coordinates><panel_attributes>Comment
+--
+• id: int  
+• user_id: int (FK → User.id)  
+• clinic_id: int (FK → Clinic.id)  
+• text: text  
+• created_at: timestamp</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>140</x><y>400</y><w>210</w><h>110</h></coordinates><panel_attributes>Log
+--
+• id: int  
+• user_id: int (FK → User.id)  
+• action: string  
+• timestamp: timestamp  
+• description: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>120</y><w>140</w><h>80</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+ </panel_attributes><additional_attributes>10;60;120;10</additional_attributes></element><element><id>Relation</id><coordinates><x>810</x><y>100</y><w>160</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+</panel_attributes><additional_attributes>10;10;140;30</additional_attributes></element><element><id>Relation</id><coordinates><x>350</x><y>240</y><w>140</w><h>240</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+ </panel_attributes><additional_attributes>10;10;110;220</additional_attributes></element><element><id>Relation</id><coordinates><x>310</x><y>480</y><w>170</w><h>150</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+ </panel_attributes><additional_attributes>150;10;10;130</additional_attributes></element><element><id>Relation</id><coordinates><x>410</x><y>660</y><w>200</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+ </panel_attributes><additional_attributes>10;20;180;20</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>560</y><w>120</w><h>130</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+</panel_attributes><additional_attributes>10;110;100;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1090</x><y>220</y><w>40</w><h>140</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=1
+</panel_attributes><additional_attributes>10;10;10;120</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>230</y><w>190</w><h>110</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+ </panel_attributes><additional_attributes>10;10;170;90</additional_attributes></element><element><id>Relation</id><coordinates><x>790</x><y>200</y><w>180</w><h>130</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+</panel_attributes><additional_attributes>10;110;160;10</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>240</y><w>50</w><h>180</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+</panel_attributes><additional_attributes>10;10;10;160</additional_attributes></element><element><id>Relation</id><coordinates><x>1000</x><y>220</y><w>50</w><h>140</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+</panel_attributes><additional_attributes>10;10;10;120</additional_attributes></element></diagram>
