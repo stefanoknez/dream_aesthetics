@@ -5,7 +5,6 @@ import uuid
 import cv2
 from datetime import datetime
 
-from utils.wrinkle_detection import detect_wrinkles
 from utils.mole_detection import detect_moles
 from utils.dynaface_analysis import analyze_symmetry_and_otapostazija
 from utils.golden_ratio_analysis import analyze_golden_ratio
@@ -39,7 +38,6 @@ def analyze_face():
     file_size = os.path.getsize(filepath)
 
     # Analize
-    wrinkle_score = detect_wrinkles(image)
     mole_count = detect_moles(image)
     dynaface_data = analyze_symmetry_and_otapostazija(filepath)
     golden_ratio_data = analyze_golden_ratio(filepath)
@@ -51,7 +49,6 @@ def analyze_face():
         "channels": channels,
         "file_size_bytes": file_size,
         "timestamp": datetime.now().isoformat(),
-        "wrinkle_score": wrinkle_score,
         "mole_count": mole_count,
         "face_symmetry": dynaface_data.get("symmetry_score"),
         "face_symmetry_details": dynaface_data.get("symmetry_details"),
