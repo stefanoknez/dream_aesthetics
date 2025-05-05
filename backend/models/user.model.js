@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     });
   
     User.associate = (models) => {
-      User.hasMany(models.AppointmentRequest, { foreignKey: 'user_id' });
-      User.hasMany(models.Photo, { foreignKey: 'user_id' });
-      User.hasMany(models.Comment, { foreignKey: 'user_id' });
-      User.hasMany(models.Log, { foreignKey: 'user_id' });
+      // User.hasMany(models.appointmentrequest, { foreignKey: 'user_id' });
+      // User.hasMany(models.photo, { foreignKey: 'user_id' });
+      // User.hasMany(models.comment, { foreignKey: 'user_id' });
+      // User.hasMany(models.log, { foreignKey: 'user_id' });
     };
   
     return User;

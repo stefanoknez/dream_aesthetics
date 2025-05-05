@@ -6,7 +6,6 @@ const path = require("path");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.DIALECT,
-  operatorsAliases: false,
   pool: dbConfig.pool
 });
 
