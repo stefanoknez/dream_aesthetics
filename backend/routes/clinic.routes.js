@@ -1,0 +1,15 @@
+const express = require("express");
+const router = express.Router();
+const clinicController = require("../controllers/clinic.controller");
+const { authJwt } = require("../middlewares");
+
+// public routes
+router.get("/", clinicController.getAllClinics);
+router.get("/:id", clinicController.getClinicById);
+
+// admin-protected routes
+router.post("/", [authJwt.verifyToken, authJwt.isAdmin], clinicController.createClinic);
+router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], clinicController.updateClinic);
+router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], clinicController.deleteClinic);
+
+module.exports = router;
