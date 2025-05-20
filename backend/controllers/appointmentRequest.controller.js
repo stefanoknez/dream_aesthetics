@@ -1,7 +1,7 @@
 const db = require("../models");
 const AppointmentRequest = db.AppointmentRequest;
 
-exports.getAllAppointmentRequests = async (req, res) => {
+exports.getAllAppointmentRequests = async (req, res) => { 
     try {
         const appointments = await AppointmentRequest.findAll();
         res.json(appointments);
