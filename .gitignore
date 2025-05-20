@@ -134,3 +134,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+ai_service/venv/
+ai_service/shape_predictor_68_face_landmarks.dat
+ai_service/venv/lib/python3.12/site-packages/GoldenFace/landmark.yaml
+ai_service/venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.dylib
+ai_service/venv/lib/python3.12/site-packages/jaxlib/xla_extension.so
