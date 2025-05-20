@@ -52,7 +52,6 @@ exports.updateCity = async (req, res) => {
       res.status(500).send({ message: err.message });
     }
   };
-
   
 exports.deleteCity = async (req, res) => {
     try {

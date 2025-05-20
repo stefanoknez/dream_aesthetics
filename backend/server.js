@@ -13,6 +13,8 @@ const recommendationRoutes = require("./routes/recommendation.routes");
 const treatmentRoutes = require("./routes/treatment.routes");
 const commentRoutes = require("./routes/comment.routes");
 const logRoutes = require("./routes/log.routes");
+const searchRoutes = require("./routes/search.routes");
+const path = require("path");
 
 const corsOptions = {
     origin: "http://localhost:3000"
@@ -37,6 +39,8 @@ app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/treatments", treatmentRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/logs", logRoutes);
+app.use("/api/search", searchRoutes);
+
 
 db.sequelize.sync({ force: false }).then(() => {
     console.log("Database synced.");
