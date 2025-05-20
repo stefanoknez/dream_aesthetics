@@ -11,6 +11,7 @@ const photoRoutes = require("./routes/photo.routes");
 const analysisResultRoutes = require("./routes/analysisResult.routes");
 const recommendationRoutes = require("./routes/recommendation.routes");
 const treatmentRoutes = require("./routes/treatment.routes");
+const commentRoutes = require("./routes/comment.routes");
 
 const corsOptions = {
     origin: "http://localhost:3000"
@@ -33,6 +34,7 @@ app.use("/api/photos", photoRoutes);
 app.use("/api/analysis-results", analysisResultRoutes);
 app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/treatments", treatmentRoutes);
+app.use("/api/comments", commentRoutes);
 
 db.sequelize.sync({ force: false }).then(() => {
     console.log("Database synced.");
