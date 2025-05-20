@@ -4,20 +4,31 @@ const User = db.User;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-exports.signup = (req, res) => {
-    User.create({
+exports.signup = async (req, res) => {
+    try {
+      const user = await User.create({
         username: req.body.username,
         password: bcrypt.hashSync(req.body.password, 8),
         role: req.body.role || "USER"
-    }).then(user => {
-        res.send({ message: "User was registered successfully!" });
-    }).catch(err => {
-        res.status(500).send({ message: err.message });
-    });
-};
+      });
+  
+      await db.Log.create({
+        user_id: user.id,
+        action: "User Signup",
+        description: `User '${user.username}' successfully registered.`,
+        timestamp: new Date()
+      });
+  
+      res.send({ message: "User was registered successfully!" });
+    } catch (err) {
+      res.status(500).send({ message: err.message });
+    }
+  };
 
-exports.signin = (req, res) => {
-    User.findOne({ where: { username: req.body.username } }).then(user => {
+exports.signin = async (req, res) => {
+    try {
+        const user = await User.findOne({ where: { username: req.body.username } });
+
         if (!user) {
             return res.status(404).send({ message: "User Not found." });
         }
@@ -28,13 +39,22 @@ exports.signin = (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 });
+
+        await db.Log.create({
+            user_id: user.id,
+            action: "User Login",
+            description: `User '${user.username}' successfully signed in.`,
+            timestamp: new Date()
+        });
+
         res.status(200).send({
             id: user.id,
             username: user.username,
             role: user.role,
             accessToken: token
         });
-    }).catch(err => {
+
+    } catch (err) {
         res.status(500).send({ message: err.message });
-    });
+    }
 };

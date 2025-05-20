@@ -34,17 +34,26 @@ exports.createCity = async (req, res) => {
 
 exports.updateCity = async (req, res) => {
     try {
-        const city = await City.findByPk(req.params.id);
-        if (!city) {
-            return res.status(404).send({ message: "City not found" });
-        }
-        await city.update(req.body);
-        res.json(city);
+      const city = await City.findByPk(req.params.id);
+      if (!city) {
+        return res.status(404).send({ message: "City not found" });
+      }
+      await city.update(req.body);
+  
+      await db.Log.create({
+        user_id: req.userId,
+        action: "Update City",
+        description: `Admin updated city ID ${req.params.id}.`,
+        timestamp: new Date()
+      });
+  
+      res.json(city);
     } catch (err) {
-        res.status(500).send({ message: err.message });
+      res.status(500).send({ message: err.message });
     }
-};
+  };
 
+  
 exports.deleteCity = async (req, res) => {
     try {
         const city = await City.findByPk(req.params.id);

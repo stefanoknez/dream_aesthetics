@@ -24,21 +24,29 @@ exports.getCommentById = async (req, res) => {
 
 exports.createComment = async (req, res) => {
     try {
-        const { clinic_id, text } = req.body;
-        if (!clinic_id || !text) {
-            return res.status(400).send({ message: "Clinic ID and text are required" });
-        }
-        const newComment = await Comment.create({
-            user_id: req.userId,
-            clinic_id,
-            text,
-            created_at: new Date()
-        });
-        res.status(201).json(newComment);
+      const { clinic_id, text } = req.body;
+      if (!clinic_id || !text) {
+        return res.status(400).send({ message: "Clinic ID and text are required" });
+      }
+      const newComment = await Comment.create({
+        user_id: req.userId,
+        clinic_id,
+        text,
+        created_at: new Date()
+      });
+  
+      await db.Log.create({
+        user_id: req.userId,
+        action: "Add Comment",
+        description: `User commented on clinic ID ${clinic_id}.`,
+        timestamp: new Date()
+      });
+  
+      res.status(201).json(newComment);
     } catch (err) {
-        res.status(500).send({ message: err.message });
+      res.status(500).send({ message: err.message });
     }
-};
+  };
 
 exports.updateComment = async (req, res) => {
     try {

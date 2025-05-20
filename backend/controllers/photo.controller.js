@@ -24,21 +24,29 @@ exports.getPhotoById = async (req, res) => {
 
 exports.uploadPhoto = async (req, res) => {
     try {
-        const { filename } = req.body;
-        if (!filename) {
-            return res.status(400).send({ message: "Filename is required" });
-        }
-        const newPhoto = await Photo.create({
-            user_id: req.userId,  // uzimamo ID iz tokena
-            filename,
-            uploaded_at: new Date()
-        });
-        res.status(201).json(newPhoto);
+      const { filename } = req.body;
+      if (!filename) {
+        return res.status(400).send({ message: "Filename is required" });
+      }
+      const newPhoto = await Photo.create({
+        user_id: req.userId,
+        filename,
+        uploaded_at: new Date()
+      });
+  
+      await db.Log.create({
+        user_id: req.userId,
+        action: "Upload Photo",
+        description: `User uploaded photo '${filename}'.`,
+        timestamp: new Date()
+      });
+  
+      res.status(201).json(newPhoto);
     } catch (err) {
-        res.status(500).send({ message: err.message });
+      res.status(500).send({ message: err.message });
     }
-};
-
+  };
+  
 exports.deletePhoto = async (req, res) => {
     try {
         const photo = await Photo.findByPk(req.params.id);

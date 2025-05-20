@@ -24,13 +24,21 @@ exports.getAppointmentRequestById = async (req, res) => {
 
 exports.createAppointmentRequest = async (req, res) => {
     try {
-        const { user_id, clinic_id, datetime, status } = req.body;
-        const newAppointment = await AppointmentRequest.create({ user_id, clinic_id, datetime, status });
-        res.status(201).json(newAppointment);
+      const { user_id, clinic_id, datetime, status } = req.body;
+      const newAppointment = await AppointmentRequest.create({ user_id, clinic_id, datetime, status });
+  
+      await db.Log.create({
+        user_id: req.userId,
+        action: "Create Appointment",
+        description: `User created an appointment with clinic ID ${clinic_id}.`,
+        timestamp: new Date()
+      });
+  
+      res.status(201).json(newAppointment);
     } catch (err) {
-        res.status(500).send({ message: err.message });
+      res.status(500).send({ message: err.message });
     }
-};
+  };
 
 exports.updateAppointmentRequest = async (req, res) => {
     try {
