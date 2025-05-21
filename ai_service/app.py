@@ -1,68 +1,72 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
+from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 import uuid
+import os
 import cv2
 from datetime import datetime
 
 from utils.mole_detection import detect_moles
-from utils.dynaface_analysis import analyze_symmetry_and_otapostazija
 from utils.golden_ratio_analysis import analyze_golden_ratio
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-@app.route("/analyze-face", methods=["POST"])
-def analyze_face():
-    if "image" not in request.files:
-        return jsonify({"error": "Image not found"}), 400
+@app.post("/analyze-face")
+async def analyze_face(image: UploadFile = File(...)):
+    try:
+        if not image.filename:
+            return JSONResponse(content={"error": "Empty filename"}, status_code=400)
 
-    image_file = request.files["image"]
+        filename = f"{uuid.uuid4().hex}.jpg"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        with open(filepath, "wb") as f:
+            f.write(await image.read())
 
-    if image_file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
+        image_cv = cv2.imread(filepath)
+        if image_cv is None:
+            raise ValueError("Unable to read image with OpenCV")
 
-    filename = f"{uuid.uuid4().hex}.jpg"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    image_file.save(filepath)
+        height, width, channels = image_cv.shape
+        file_size = os.path.getsize(filepath)
 
-    # Učitavanje slike
-    image = cv2.imread(filepath)
-    if image is None:
-        return jsonify({"error": "Unable to read image"}), 400
+        mole_count = detect_moles(image_cv)
 
-    height, width, channels = image.shape
-    file_size = os.path.getsize(filepath)
+        try:
+            golden_ratio_data = analyze_golden_ratio(filepath)
+        except Exception as e:
+            golden_ratio_data = {
+                "geometric_ratio": None,
+                "similarity_ratio": None
+            }
+            print(f"[WARNING] Golden ratio analysis failed: {e}")
 
-    # Analize
-    mole_count = detect_moles(image)
-    dynaface_data = analyze_symmetry_and_otapostazija(filepath)
-    golden_ratio_data = analyze_golden_ratio(filepath)
+        acne_detected = mole_count > 10
+        botox_recommended = (
+            golden_ratio_data.get("geometric_ratio") is not None and
+            golden_ratio_data.get("geometric_ratio") < 0.9
+        )
 
-    result = {
-        "filename": filename,
-        "image_width": width,
-        "image_height": height,
-        "channels": channels,
-        "file_size_bytes": file_size,
-        "timestamp": datetime.now().isoformat(),
-        "mole_count": mole_count,
-        "face_symmetry": dynaface_data.get("symmetry_score"),
-        "face_symmetry_details": dynaface_data.get("symmetry_details"),
-        "has_otapostazija": dynaface_data.get("has_otapostazija"),
-        "left_ear_distance": dynaface_data.get("left_ear_distance"),
-        "right_ear_distance": dynaface_data.get("right_ear_distance"),
-        "botox_recommended": dynaface_data.get("botox_recommended"),
-        "acne_detected": dynaface_data.get("acne_detected"),
-        "golden_ratio": golden_ratio_data.get("geometric_ratio"),
-        "golden_similarity": golden_ratio_data.get("similarity_ratio"),
-    }
+        result = {
+            "filename": filename,
+            "image_width": width,
+            "image_height": height,
+            "channels": channels,
+            "file_size_bytes": file_size,
+            "timestamp": datetime.now().isoformat(),
+            "mole_count": mole_count,
+            "golden_ratio": golden_ratio_data.get("geometric_ratio"),
+            "golden_similarity": golden_ratio_data.get("similarity_ratio"),
+            "acne_detected": acne_detected,
+            "botox_recommended": botox_recommended,
+        }
 
-    return jsonify(result)
+        return JSONResponse(content=result, status_code=200)
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5050)
+    except Exception as e:
+        print(f"[ERROR] analyze_face: {str(e)}")
+        return JSONResponse(content={"error": str(e)}, status_code=500)
