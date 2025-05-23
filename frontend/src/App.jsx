@@ -10,8 +10,13 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       </Routes>
     </div>
   )
+}
+
+function ProtectedRoute({ children }) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? children : <Navigate to="/login" />;
 }

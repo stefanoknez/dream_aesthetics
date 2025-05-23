@@ -1,12 +1,18 @@
 const API_URL = "http://localhost:3000/api/auth/";
 
-const register = async (username, password, role = "USER") => {
+const register = async (username, email, password, role = "USER") => {
   const response = await fetch(API_URL + "signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password, role })
+    body: JSON.stringify({ username, email, password, role })
   });
-  return response.json();
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Registration failed");
+  }
+
+  return data;
 };
 
 const login = async (username, password) => {
@@ -17,8 +23,11 @@ const login = async (username, password) => {
   });
 
   const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Login failed");
+  }
 
-  if (response.ok && data.accessToken) {
+  if (data.accessToken) {
     localStorage.setItem("user", JSON.stringify(data));
   }
 
