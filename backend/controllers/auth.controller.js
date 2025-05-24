@@ -3,12 +3,13 @@ const config = require("../config/auth.config");
 const User = db.User;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
 
 exports.signup = async (req, res) => {
   try {
     const user = await User.create({
       username: req.body.username,
-      email: req.body.email,
+      email: req.body.email,      
       password: bcrypt.hashSync(req.body.password, 8),
       role: req.body.role || "USER"
     });
@@ -28,10 +29,17 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { username: req.body.username } });
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [
+          { username: req.body.username },
+          { email: req.body.username }
+        ]
+      }
+    });
 
     if (!user) {
-      return res.status(404).send({ message: "User Not found." });
+      return res.status(404).send({ message: "User not found." });
     }
 
     const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
@@ -39,7 +47,7 @@ exports.signin = async (req, res) => {
       return res.status(401).send({ accessToken: null, message: "Invalid Password!" });
     }
 
-    const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 });
+    const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 }); // 24h
 
     await db.Log.create({
       user_id: user.id,
@@ -51,6 +59,7 @@ exports.signin = async (req, res) => {
     res.status(200).send({
       id: user.id,
       username: user.username,
+      email: user.email,
       role: user.role,
       accessToken: token
     });

@@ -19,10 +19,9 @@ const upload = multer({ storage });
 
 router.get("/", photoController.getAllPhotos);
 router.get("/:id", photoController.getPhotoById);
-
 router.post("/", [authJwt.verifyToken], photoController.uploadPhoto);
 router.post("/upload", [authJwt.verifyToken, upload.single("photo")], photoController.uploadPhotoFile);
-
+router.post("/analyze", [authJwt.verifyToken, upload.single("photo")], photoController.analyzePhoto);
 router.delete("/:id", [authJwt.verifyToken], photoController.deletePhoto);
 
 module.exports = router;
