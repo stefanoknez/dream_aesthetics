@@ -125,25 +125,42 @@ exports.analyzePhoto = async (req, res) => {
 
         for (const result of results) {
             if (result.type === "mole_count" && result.value > 10) {
-                await Recommendation.create({
-                    analysis_result_id: null,
-                    treatment_id: 2,
-                    message: "High number of moles detected. Consider dermatological consultation."
+                const exists = await Recommendation.findOne({
+                    where: { treatment_id: 2, analysis_result_id: null }
                 });
+                if (!exists) {
+                    await Recommendation.create({
+                        analysis_result_id: null,
+                        treatment_id: 2,
+                        message: "High number of moles detected. Consider dermatological consultation."
+                    });
+                }
             }
+
             if (result.type === "acne_detected" && result.value === true) {
-                await Recommendation.create({
-                    analysis_result_id: null,
-                    treatment_id: 3,
-                    message: "Acne signs detected. Skincare treatments recommended."
+                const exists = await Recommendation.findOne({
+                    where: { treatment_id: 3, analysis_result_id: null }
                 });
+                if (!exists) {
+                    await Recommendation.create({
+                        analysis_result_id: null,
+                        treatment_id: 3,
+                        message: "Acne signs detected. Skincare treatments recommended."
+                    });
+                }
             }
+
             if (result.type === "botox_recommended" && result.value === true) {
-                await Recommendation.create({
-                    analysis_result_id: null,
-                    treatment_id: 4,
-                    message: "Botox treatment may be beneficial based on detected facial features."
+                const exists = await Recommendation.findOne({
+                    where: { treatment_id: 4, analysis_result_id: null }
                 });
+                if (!exists) {
+                    await Recommendation.create({
+                        analysis_result_id: null,
+                        treatment_id: 4,
+                        message: "Botox treatment may be beneficial based on detected facial features."
+                    });
+                }
             }
         }
 

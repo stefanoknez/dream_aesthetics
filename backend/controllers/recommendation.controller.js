@@ -1,9 +1,15 @@
 const db = require("../models");
 const Recommendation = db.Recommendation;
+const Treatment = db.Treatment;
 
 exports.getAllRecommendations = async (req, res) => {
     try {
-        const recommendations = await Recommendation.findAll();
+        const recommendations = await Recommendation.findAll({
+            include: [{
+                model: Treatment,
+                attributes: ["name", "description"]
+            }]
+        });
         res.json(recommendations);
     } catch (err) {
         res.status(500).send({ message: err.message });
@@ -12,7 +18,12 @@ exports.getAllRecommendations = async (req, res) => {
 
 exports.getRecommendationById = async (req, res) => {
     try {
-        const recommendation = await Recommendation.findByPk(req.params.id);
+        const recommendation = await Recommendation.findByPk(req.params.id, {
+            include: [{
+                model: Treatment,
+                attributes: ["name", "description"]
+            }]
+        });
         if (!recommendation) {
             return res.status(404).send({ message: "Recommendation not found" });
         }
