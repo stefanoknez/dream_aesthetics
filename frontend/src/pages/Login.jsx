@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AuthService from "../services/auth.service";
 import logo from "../assets/logo.png";
 
@@ -12,77 +12,72 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
-
     try {
       const user = await AuthService.login(username, password);
       if (user.accessToken) {
-        if (user.role === "ADMIN") {
-          navigate("/admin-dashboard");
-        } else {
-          navigate("/dashboard");
-        }
+        navigate(user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard");
       } else {
         setMessage("Login failed. Invalid credentials.");
       }
-    } catch (err) {
+    } catch {
       setMessage("Login failed. Invalid credentials.");
     }
   };
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-      <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <div className="flex justify-center">
-            <img src={logo} alt="logo" className="h-12 w-12" />
+    <div className="relative min-h-screen overflow-hidden font-sans">
+      {/* Background Slideshow */}
+      <div className="absolute inset-0 z-0 animate-fadeBackground">
+        <div className="absolute inset-0 bg-black opacity-50 z-10" />
+        <div className="bg-slideshow z-0 w-full h-full" />
+      </div>
+
+      {/* Login form */}
+      <div className="relative z-20 flex items-center h-screen px-10">
+        <div className="w-[520px] py-16 bg-white rounded-lg shadow-lg p-8 dark:bg-gray-800 dark:text-white ml-20">
+          <div className="flex flex-col items-center mb-8">
+            <img src={logo} alt="Logo" className="w-16 h-16 mb-2" />
+            <h1 className="text-2xl font-bold text-center">Sign in to your account</h1>
           </div>
-          <h1 className="text-xl font-bold leading-tight tracking-tight text-center text-gray-900 md:text-2xl dark:text-white">
-            Sign in to your account
-          </h1>
-          {message && <div className="text-red-600 text-sm text-center">{message}</div>}
-          <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className="space-y-6">
+            {message && <div className="text-red-500 text-sm text-center">{message}</div>}
             <div>
-              <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Username
-              </label>
+              <label htmlFor="username" className="block text-sm font-medium">Username</label>
               <input
                 type="text"
-                name="username"
                 id="username"
-                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter your username"
                 required
               />
             </div>
             <div>
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium">Password</label>
               <input
                 type="password"
-                name="password"
                 id="password"
-                placeholder="Enter your password"
-                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter your password"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition font-medium"
             >
               Sign in
             </button>
-            <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
-              Don’t have an account yet? <a href="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              Don’t have an account yet?{" "}
+              <Link to="/register" className="text-red-500 hover:underline">Sign up</Link>
             </p>
           </form>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
