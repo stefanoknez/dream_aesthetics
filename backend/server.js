@@ -40,8 +40,12 @@ const treatmentRoutes = require("./routes/treatment.routes");
 const commentRoutes = require("./routes/comment.routes");
 const logRoutes = require("./routes/log.routes");
 const searchRoutes = require("./routes/search.routes");
+const userRoutes = require("./routes/user.routes");
+const fileRoutes = require("./routes/file.routes");
+const clinicAdminRoutes = require("./routes/clinicAdmin.routes");
 
 authRoutes(app);
+userRoutes(app);
 
 app.use("/api/clinics", clinicRoutes);
 app.use("/api/cities", cityRoutes);
@@ -53,6 +57,8 @@ app.use("/api/treatments", treatmentRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/logs", logRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/files", fileRoutes);
+app.use("/api/clinic-admin", clinicAdminRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -15,7 +15,13 @@ export default function Login() {
     try {
       const user = await AuthService.login(username, password);
       if (user.accessToken) {
-        navigate(user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard");
+        if (user.role === "ADMIN") {
+          navigate("/admin-dashboard");
+        } else if (user.role === "CLINIC_ADMIN") {
+          navigate("/clinic-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setMessage("Login failed. Invalid credentials.");
       }

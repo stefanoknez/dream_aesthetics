@@ -21,10 +21,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM("ADMIN", "USER", "CLINIC_ADMIN"),
       allowNull: false,
       defaultValue: "USER",
-    },
+    }
   });
 
   User.associate = (models) => {
+    User.hasOne(models.Clinic, {
+      foreignKey: "user_id",
+      as: "clinic",
+    });
+
     User.hasMany(models.AppointmentRequest, {
       foreignKey: "user_id",
       onDelete: "CASCADE",

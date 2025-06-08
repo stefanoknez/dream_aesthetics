@@ -1,25 +1,44 @@
-import React from 'react';
+// src/components/Navbar.jsx
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+
+  const getDashboardRoute = () => {
+    if (!user) return "/";
+    if (user.role === "ADMIN") return "/admin-dashboard";
+    if (user.role === "CLINIC_ADMIN") return "/clinic-dashboard";
+    return "/dashboard";
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-black text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="text-2xl font-bold text-yellow-400">Dream Aesthetics</div>
-        <div className="space-x-6 hidden md:flex">
-          <button onClick={() => scrollToSection('about')} className="hover:text-yellow-400">About</button>
-          <button onClick={() => scrollToSection('clinics')} className="hover:text-yellow-400">Clinics</button>
-          <button onClick={() => scrollToSection('support')} className="hover:text-yellow-400">Support</button>
-          <button onClick={() => scrollToSection('reviews')} className="hover:text-yellow-400">Reviews</button>
-        </div>
-        <div>
-          <a href="/login" className="text-red-400 hover:text-red-300 mr-4">Sign In</a>
-          <a href="/register" className="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded">Sign Up</a>
-        </div>
+    <nav className="bg-black text-white flex justify-between items-center p-4 shadow-md">
+      <Link
+        to={getDashboardRoute()}
+        className="text-yellow-400 font-bold text-xl hover:text-yellow-300"
+      >
+        Dream Aesthetics
+      </Link>
+      <div className="space-x-4">
+        <Link to="/about">About</Link>
+        <Link to="/clinics">Clinics</Link>
+        <Link to="/support">Support</Link>
+        <Link to="/reviews">Reviews</Link>
+        {user && (
+          <button
+            onClick={handleLogout}
+            className="ml-4 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+          >
+            Sign Out
+          </button>
+        )}
       </div>
     </nav>
   );
