@@ -10,7 +10,7 @@ export default function AdminFiles() {
 
   const fetchFiles = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/files", {
+      const res = await axios.get("http://localhost:3000/api/files/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFiles(res.data);
@@ -26,7 +26,7 @@ export default function AdminFiles() {
     try {
       await Promise.all(
         selectedFiles.map((file) =>
-          axios.delete(`http://localhost:3000/api/files/${file}`, {
+          axios.delete(`http://localhost:3000/api/files/admin/${file}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         )
@@ -61,7 +61,7 @@ export default function AdminFiles() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto mt-10 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6">Manage Files</h1>
+      <h1 className="text-2xl font-bold mb-6">Manage Uploaded Files</h1>
 
       <div className="mb-4 flex justify-between items-center">
         <button
