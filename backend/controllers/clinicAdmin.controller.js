@@ -35,10 +35,22 @@ exports.getAppointments = async (req, res) => {
     const clinic = await Clinic.findOne({ where: { user_id: userId } });
     if (!clinic) return res.status(404).send({ message: "Clinic not found." });
 
-    const appointments = await AppointmentRequest.findAll({ where: { clinic_id: clinic.id } });
+    const appointments = await AppointmentRequest.findAll({
+      where: { clinic_id: clinic.id },
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["id", "username"]
+        }
+      ],
+      order: [["datetime", "ASC"]]
+    });
+
     res.json(appointments);
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    console.error("getAppointments error:", err);
+    res.status(500).send({ message: "Failed to fetch appointments." });
   }
 };
 
@@ -46,10 +58,19 @@ exports.updateAppointmentStatus = async (req, res) => {
   try {
     const appointmentId = req.params.id;
     const { status } = req.body;
-    await AppointmentRequest.update({ status }, { where: { id: appointmentId } });
-    res.send({ message: "Appointment status updated." });
+
+    const appointment = await AppointmentRequest.findByPk(appointmentId);
+    if (!appointment) {
+      return res.status(404).send({ message: "Appointment not found." });
+    }
+
+    appointment.status = status;
+    await appointment.save();
+
+    res.send({ message: `Appointment ${status.toLowerCase()} successfully.` });
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    console.error("updateAppointmentStatus error:", err);
+    res.status(500).send({ message: "Failed to update appointment status." });
   }
 };
 
@@ -65,7 +86,7 @@ exports.getMyTreatments = async (req, res) => {
     });
 
     const result = treatments
-      .filter((ct) => ct.Treatment) 
+      .filter((ct) => ct.Treatment)
       .map((ct) => ({
         id: ct.Treatment.id,
         name: ct.Treatment.name,

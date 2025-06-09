@@ -3,30 +3,40 @@ import axios from "axios";
 
 export default function ClinicAppointments() {
   const [appointments, setAppointments] = useState([]);
-
-  const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/clinic-admin/appointments", {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await axios.get("http://localhost:3000/api/appointments", {
+        headers: { Authorization: `Bearer ${user.accessToken}` },
       });
       setAppointments(res.data);
     } catch (err) {
-      alert("Failed to fetch appointments.");
+      alert("Failed to load appointments");
     }
   };
 
   const updateStatus = async (id, status) => {
     try {
       await axios.put(
-        `http://localhost:3000/api/clinic-admin/appointments/${id}`,
+        `http://localhost:3000/api/appointments/${id}`,
         { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
       fetchAppointments();
     } catch (err) {
-      alert("Failed to update status.");
+      alert("Failed to update status");
+    }
+  };
+
+  const deleteAppointment = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/appointments/${id}`, {
+        headers: { Authorization: `Bearer ${user.accessToken}` },
+      });
+      fetchAppointments();
+    } catch (err) {
+      alert("Failed to delete appointment");
     }
   };
 
@@ -35,35 +45,41 @@ export default function ClinicAppointments() {
   }, []);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto mt-10 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
-      <table className="w-full border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">User</th>
-            <th className="p-2 border">Date</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Action</th>
+    <div className="p-6 max-w-2xl mx-auto mt-10 bg-white/60 backdrop-blur-md border border-white/30 rounded-xl shadow-lg">
+      <h2 className="text-2xl font-bold mb-4">Appointments</h2>
+      <table className="w-full table-auto border">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border p-2">User</th>
+            <th className="border p-2">Date</th>
+            <th className="border p-2">Status</th>
+            <th className="border p-2">Action</th>
           </tr>
         </thead>
         <tbody>
           {appointments.map((a) => (
-            <tr key={a.id}>
-              <td className="p-2 border">{a.user_id}</td>
-              <td className="p-2 border">{a.date}</td>
-              <td className="p-2 border">{a.status}</td>
-              <td className="p-2 border space-x-2">
+            <tr key={a.id} className="text-center">
+              <td className="border p-2">{a.User?.username || a.user_id}</td>
+              <td className="border p-2">{new Date(a.datetime).toLocaleString()}</td>
+              <td className="border p-2">{a.status.toUpperCase()}</td>
+              <td className="border p-2 space-x-2">
                 <button
-                  className="bg-green-500 text-white px-2 rounded"
                   onClick={() => updateStatus(a.id, "APPROVED")}
+                  className="bg-green-500 text-white px-2 py-1 rounded"
                 >
                   Approve
                 </button>
                 <button
-                  className="bg-red-500 text-white px-2 rounded"
                   onClick={() => updateStatus(a.id, "REJECTED")}
+                  className="bg-red-500 text-white px-2 py-1 rounded"
                 >
                   Reject
+                </button>
+                <button
+                  onClick={() => deleteAppointment(a.id)}
+                  className="bg-gray-500 text-white px-2 py-1 rounded"
+                >
+                  Delete
                 </button>
               </td>
             </tr>

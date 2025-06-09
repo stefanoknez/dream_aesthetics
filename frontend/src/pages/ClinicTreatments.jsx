@@ -1,4 +1,3 @@
-// UPDATED ClinicTreatments.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -67,16 +66,16 @@ export default function ClinicTreatments() {
   }, []);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto mt-10 bg-white rounded shadow">
+    <div className="p-6 max-w-4xl mx-auto mt-10 bg-white/60 backdrop-blur-md rounded-xl shadow-xl border border-white/30">
       <h1 className="text-2xl font-bold mb-4">Clinic Treatments</h1>
 
       {error && <div className="text-red-600 mb-4">{error}</div>}
 
-      <div className="mb-4">
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
         <select
           value={selectedTreatmentId}
           onChange={(e) => setSelectedTreatmentId(e.target.value)}
-          className="p-2 border rounded mr-2"
+          className="p-2 border border-gray-300 rounded w-full md:w-2/3"
         >
           <option value="">-- Select Treatment --</option>
           {allTreatments.map((t) => (
@@ -87,24 +86,28 @@ export default function ClinicTreatments() {
         </select>
         <button
           onClick={addTreatment}
-          className="bg-blue-600 text-white px-4 py-1 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full md:w-auto"
         >
           Add Treatment
         </button>
       </div>
 
       {treatments.length === 0 ? (
-        <p className="text-gray-500">No treatments assigned to this clinic.</p>
+        <p className="text-gray-700">No treatments assigned to this clinic.</p>
       ) : (
-        <ul className="list-disc pl-6">
+        <ul className="divide-y divide-gray-200">
           {treatments.map((t, i) => (
-            <li key={i} className="flex justify-between items-center mb-2">
+            <li
+              key={i}
+              className="py-2 flex justify-between items-center hover:bg-gray-100 px-2 rounded"
+            >
               <span>
-                <strong>{t.name || t.Treatment?.name}</strong> – {t.description || t.Treatment?.description}
+                <strong>{t.name || t.Treatment?.name}</strong> –{" "}
+                {t.description || t.Treatment?.description}
               </span>
               <button
                 onClick={() => removeTreatment(t.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
               >
                 Remove
               </button>

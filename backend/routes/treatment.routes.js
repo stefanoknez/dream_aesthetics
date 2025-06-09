@@ -6,6 +6,7 @@ const { authJwt } = require("../middlewares");
 // public routes
 router.get("/", treatmentController.getAllTreatments);
 router.get("/:id", treatmentController.getTreatmentById);
+router.get("/:id/clinics", treatmentController.getClinicsForTreatment);
 
 // admin-protected routes
 router.post("/", [authJwt.verifyToken, authJwt.isAdmin], treatmentController.createTreatment);

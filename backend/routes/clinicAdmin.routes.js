@@ -7,6 +7,7 @@ router.get("/my-clinic", [authJwt.verifyToken, authJwt.isClinicAdmin], clinicAdm
 router.put("/my-clinic", [authJwt.verifyToken, authJwt.isClinicAdmin], clinicAdminController.updateMyClinic);
 
 router.get("/appointments", [authJwt.verifyToken, authJwt.isClinicAdmin], clinicAdminController.getAppointments);
+
 router.put("/appointments/:id", [authJwt.verifyToken, authJwt.isClinicAdmin], clinicAdminController.updateAppointmentStatus);
 
 router.get("/treatments", [authJwt.verifyToken, authJwt.isClinicAdmin], clinicAdminController.getMyTreatments);

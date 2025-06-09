@@ -135,6 +135,7 @@ export default function AdminUsers() {
                   >
                     <option value="USER">USER</option>
                     <option value="ADMIN">ADMIN</option>
+                    <option value="CLINIC_ADMIN">CLINIC_ADMIN</option>
                   </select>
                 </td>
                 <td className="p-2 border space-x-2">

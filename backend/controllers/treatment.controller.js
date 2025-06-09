@@ -1,5 +1,7 @@
 const db = require("../models");
 const Treatment = db.Treatment;
+const Clinic = db.Clinic;
+const ClinicTreatments = db.ClinicTreatments;
 
 exports.getAllTreatments = async (req, res) => {
     try {
@@ -60,4 +62,24 @@ exports.deleteTreatment = async (req, res) => {
     } catch (err) {
         res.status(500).send({ message: err.message });
     }
+};
+
+exports.getClinicsForTreatment = async (req, res) => {
+  try {
+    const treatmentId = req.params.id;
+
+    const clinics = await Clinic.findAll({
+      include: [{
+        model: Treatment,
+        as: "treatments",
+        where: { id: treatmentId },
+        through: { attributes: [] }, // da ne prikazuje join tabelu
+      }],
+    });
+
+    res.json(clinics);
+  } catch (err) {
+    console.error("Error fetching clinics for treatment:", err);
+    res.status(500).send({ message: "Failed to fetch clinics for this treatment." });
+  }
 };

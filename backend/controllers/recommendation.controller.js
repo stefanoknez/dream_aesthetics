@@ -4,11 +4,15 @@ const Treatment = db.Treatment;
 
 exports.getAllRecommendations = async (req, res) => {
     try {
-        const recommendations = await Recommendation.findAll({
+            const recommendations = await Recommendation.findAll({
             include: [{
                 model: Treatment,
                 attributes: ["name", "description"]
-            }]
+            }],
+            attributes: [
+                [db.Sequelize.fn('DISTINCT', db.Sequelize.col('treatment_id')), 'treatment_id'],
+                'id', 'analysis_result_id', 'relevance_score', 'notes', 'createdAt'
+            ],
         });
         res.json(recommendations);
     } catch (err) {

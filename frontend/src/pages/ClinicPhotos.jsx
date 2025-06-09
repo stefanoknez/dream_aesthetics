@@ -1,3 +1,4 @@
+// ClinicPhotos.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -11,7 +12,7 @@ export default function ClinicPhotos() {
       const res = await axios.get("http://localhost:3000/api/files", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPhotos(res.data); // Expecting array of { filename, clinic_id, ... }
+      setPhotos(res.data);
     } catch (err) {
       alert("Failed to load photos");
     }
@@ -51,24 +52,24 @@ export default function ClinicPhotos() {
   }, []);
 
   return (
-    <div className="p-6 bg-white rounded shadow mt-6">
-      <h2 className="text-xl font-semibold mb-4">Upload Clinic Photos</h2>
-        <div className="mb-2">
+    <div className="bg-white/60 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-6 max-w-2xl mx-auto mt-10">
+      <h2 className="text-2xl font-bold mb-4">Upload Clinic Photos</h2>
+
+      <div className="mb-2">
         <label className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded border border-gray-300 cursor-pointer hover:bg-gray-200">
-            Browse...
-            <input
+          Browse...
+          <input
             type="file"
             onChange={(e) => setSelectedFile(e.target.files[0])}
             className="hidden"
-            />
+          />
         </label>
-        {selectedFile && (
-            <span className="ml-3 text-sm text-gray-600">{selectedFile.name}</span>
-        )}
-        </div>
+        {selectedFile && <span className="ml-3 text-sm text-gray-600">{selectedFile.name}</span>}
+      </div>
+
       <button
         onClick={handleUpload}
-        className="bg-blue-600 text-white px-4 py-1 rounded ml-2"
+        className="bg-blue-600 text-white px-4 py-1 rounded mt-2"
       >
         Upload
       </button>

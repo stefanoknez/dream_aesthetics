@@ -53,7 +53,7 @@ export default function ClinicInfo() {
   if (!clinic) return <p className="p-4">Loading...</p>;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto mt-10 bg-white rounded shadow">
+    <div className="bg-white/60 backdrop-blur-md border border-white/30 rounded-xl shadow-lg p-6 max-w-2xl mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-4">My Clinic Info</h1>
 
       <div className="space-y-4">
