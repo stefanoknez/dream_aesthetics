@@ -22,9 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     Clinic.belongsTo(models.User, { foreignKey: 'user_id' });
     Clinic.hasMany(models.AppointmentRequest, { foreignKey: 'clinic_id' });
     Clinic.hasMany(models.Comment, { foreignKey: 'clinic_id' });
+    Clinic.hasMany(models.Photo, { foreignKey: 'clinic_id' }); 
 
     Clinic.belongsToMany(models.Treatment, {
-      through: models.ClinicTreatments,
+      through: "ClinicTreatments",
       foreignKey: 'clinic_id',
       otherKey: 'treatment_id',
       as: 'treatments'  

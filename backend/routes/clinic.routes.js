@@ -3,11 +3,12 @@ const router = express.Router();
 const clinicController = require("../controllers/clinic.controller");
 const { authJwt } = require("../middlewares");
 
-// public routes
+// PUBLIC ROUTES
+router.get("/with-photos", clinicController.getClinicsWithPromoImages); 
 router.get("/", clinicController.getAllClinics);
-router.get("/:id", clinicController.getClinicById);
+router.get("/:id", clinicController.getClinicById); 
 
-// admin-protected routes
+// ADMIN-PROTECTED ROUTES
 router.post("/", [authJwt.verifyToken, authJwt.isAdmin], clinicController.createClinic);
 router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], clinicController.updateClinic);
 router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], clinicController.deleteClinic);

@@ -11,6 +11,10 @@ import AdminTreatments from "./pages/AdminTreatments";
 import AdminFiles from "./pages/AdminFiles";
 import ClinicTreatments from "./pages/ClinicTreatments"; 
 import Navbar from "./components/Navbar";
+import About from "./pages/About";
+import Clinics from "./pages/Clinics";
+import Support from "./pages/Support";
+import Reviews from "./pages/Reviews";
 
 export default function App() {
   const location = useLocation();
@@ -23,6 +27,10 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/clinics" element={<Clinics />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/reviews" element={<Reviews />} />
 
         <Route
           path="/dashboard"
@@ -83,7 +91,7 @@ export default function App() {
           }
         />
 
-        {/* Clinic admin treatments route */}
+        
         <Route
           path="/clinic-treatments"
           element={

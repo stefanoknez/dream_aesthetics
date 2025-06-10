@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import codra from "../assets/codra.webp";
+import milmedika from "../assets/milmedika.webp";
+import milmedika2 from "../assets/milmedika2.jpg";
+import milmedika3 from "../assets/milmedika3.webp";
+
+const bgImages = [codra, milmedika, milmedika2, milmedika3];
 
 export default function Dashboard() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -18,6 +24,15 @@ export default function Dashboard() {
   const [editTimes, setEditTimes] = useState([]);
   const [editTime, setEditTime] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % bgImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -179,8 +194,13 @@ export default function Dashboard() {
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <div
+        className="min-h-screen p-6 bg-cover bg-center transition-all duration-1000"
+        style={{
+          backgroundImage: `url(${bgImages[bgIndex]})`,
+        }}
+      >
+      <div className="max-w-3xl mx-auto bg-white/80 p-8 rounded-xl shadow-md">
         <h1 className="text-2xl font-bold mb-4 text-center">Upload a Photo for Analysis</h1>
 
         <div className="flex items-center mb-4 gap-4">

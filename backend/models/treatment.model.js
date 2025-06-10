@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     Treatment.hasMany(models.Recommendation, { foreignKey: 'treatment_id' });
 
     Treatment.belongsToMany(models.Clinic, {
-      through: models.ClinicTreatments,
+      through: "ClinicTreatments",
       foreignKey: 'treatment_id',
       otherKey: 'clinic_id',
       as: 'clinics' 

@@ -7,9 +7,9 @@ const { authJwt } = require("../middlewares");
 const db = require("../models");
 const Clinic = db.Clinic;
 const Photo = db.Photo;
+const AnalysisResult = db.AnalysisResult;
 
 const uploadDir = path.join(__dirname, "..", "uploads");
-
 
 // CLINIC ADMIN ROUTES
 
@@ -80,8 +80,12 @@ router.delete(
       const filePath = path.join(uploadDir, filename);
       console.log("Deleting file:", filename);
 
+      const photo = await Photo.findOne({ where: { filename } });
+      if (!photo) return res.status(404).send({ message: "Photo not found" });
+
+      await AnalysisResult.destroy({ where: { photo_id: photo.id } });
+      await photo.destroy();
       fs.unlinkSync(filePath);
-      await Photo.destroy({ where: { filename } });
 
       res.send({ message: "File deleted successfully" });
     } catch (err) {
@@ -116,8 +120,12 @@ router.delete(
       const filePath = path.join(uploadDir, filename);
       console.log("Admin deleting file:", filename);
 
+      const photo = await Photo.findOne({ where: { filename } });
+      if (!photo) return res.status(404).send({ message: "Photo not found" });
+
+      await AnalysisResult.destroy({ where: { photo_id: photo.id } });
+      await photo.destroy();
       fs.unlinkSync(filePath);
-      await Photo.destroy({ where: { filename } });
 
       res.send({ message: "File deleted by admin." });
     } catch (err) {

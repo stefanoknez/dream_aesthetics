@@ -1,7 +1,8 @@
 const db = require("../models");
+const bcrypt = require("bcryptjs");
 const User = db.User;
+const Clinic = db.Clinic;
 
-// Vrati sve korisnike
 exports.findAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -13,7 +14,43 @@ exports.findAllUsers = async (req, res) => {
   }
 };
 
-// Promjena uloge korisnika
+exports.createUser = async (req, res) => {
+  try {
+    const { username, email, password, role, clinic_id } = req.body;
+
+    if (!username || !email || !password || !role) {
+      return res.status(400).send({ message: "All required fields must be filled." });
+    }
+
+    const existing = await User.findOne({ where: { email } });
+    if (existing) {
+      return res.status(400).send({ message: "User already exists." });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 8);
+
+    const newUser = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      role
+    });
+
+    if (role === "CLINIC_ADMIN" && clinic_id) {
+      const clinic = await Clinic.findByPk(clinic_id);
+      if (clinic) {
+        clinic.user_id = newUser.id;
+        await clinic.save();
+      }
+    }
+
+    res.status(201).send({ message: "User created successfully", user: newUser });
+  } catch (err) {
+    console.error("Error adding user:", err);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
 exports.updateUserRole = async (req, res) => {
   try {
     const id = req.params.id;
@@ -25,7 +62,6 @@ exports.updateUserRole = async (req, res) => {
   }
 };
 
-// Brisanje korisnika
 exports.deleteUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -41,7 +77,6 @@ exports.updateUser = async (req, res) => {
     const id = req.params.id;
     const { username, email, role } = req.body;
 
-    // Validacija
     if (email && !email.includes("@")) {
       return res.status(400).send({ message: "Invalid email format." });
     }
