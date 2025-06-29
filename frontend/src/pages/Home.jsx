@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link as ScrollLink } from "react-scroll";
 import { Link as RouterLink } from "react-router-dom";
 import About from "./About";
@@ -7,6 +7,15 @@ import Support from "./Support";
 import Reviews from "./Reviews";
 
 export default function Home() {
+  const [hostname, setHostname] = useState("");
+
+  useEffect(() => {
+    fetch("/hostname")
+      .then((res) => res.text())
+      .then((text) => setHostname(text))
+      .catch(() => setHostname("Could not fetch hostname"));
+  }, []);
+
   return (
     <div className="text-white bg-gray-950 scroll-smooth">
       {/* Navbar */}
@@ -49,9 +58,13 @@ export default function Home() {
         <h1 className="text-5xl font-bold text-yellow-400 mb-6 drop-shadow-lg">
           Welcome to Dream Aesthetics
         </h1>
-        <p className="text-xl text-white mb-8 max-w-2xl">
+        <p className="text-xl text-white mb-4 max-w-2xl">
           Your AI-powered companion for beauty, confidence, and care.
         </p>
+
+        {/* HOSTNAME prikaz iz backend kontejnera */}
+        <p className="text-sm text-gray-400 italic mb-8">{hostname}</p>
+
         <ScrollLink
           to="about"
           smooth={true}

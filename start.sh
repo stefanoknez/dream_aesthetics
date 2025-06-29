@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "🚀 Starting backend..."
+echo "Starting backend..."
 (cd backend && npm run dev) &
 
-echo "🧠 Starting AI service..."
+echo "Starting AI service..."
 (cd ai_service && /Users/stefanoknez/Library/Python/3.12/bin/uvicorn app:app --reload --port 5050) &
 
-echo "💻 Starting frontend..."
+echo "Starting frontend..."
 (cd frontend && npm run dev)

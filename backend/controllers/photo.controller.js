@@ -1,4 +1,3 @@
-// controllers/photo.controller.js
 const db = require("../models");
 const Photo = db.Photo;
 const AnalysisResult = db.AnalysisResult;
@@ -80,34 +79,48 @@ exports.uploadPhotoFile = async (req, res) => {
 
 exports.analyzePhoto = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).send({ message: "No file uploaded." });
+    if (!req.file) {
+      console.error("[UPLOAD ERROR] No file was received.");
+      return res.status(400).send({ message: "No file uploaded." });
+    }
 
     const userId = req.userId;
     const filePath = req.file.path;
+    const fileName = req.file.filename;
 
-    // prevent duplicate photo entries with same filename + user
+    console.log(`[UPLOAD] File received: ${fileName} at path ${filePath}`);
+
     const existingPhoto = await Photo.findOne({
       where: {
         user_id: userId,
-        filename: req.file.filename
+        filename: fileName
       }
     });
-    if (existingPhoto) await existingPhoto.destroy();
+    if (existingPhoto) {
+      console.log(`[CLEANUP] Found existing photo with same filename, deleting...`);
+      await existingPhoto.destroy();
+    }
 
     const newPhoto = await Photo.create({
       user_id: userId,
-      filename: req.file.filename,
+      filename: fileName,
       uploaded_at: new Date()
     });
 
     const formData = new FormData();
     formData.append("image", fs.createReadStream(filePath));
 
-    const aiResponse = await axios.post("http://localhost:5050/analyze-face", formData, {
-      headers: formData.getHeaders()
+    console.log("[AI SERVICE] Sending image to AI service...");
+    const aiServiceUrl = process.env.AI_SERVICE_URL || "http://ai_service:8000";
+
+    const aiResponse = await axios.post(`${aiServiceUrl}/analyze-face`, formData, {
+      headers: formData.getHeaders(),
+      maxBodyLength: Infinity // za velike slike
     });
 
     const data = aiResponse.data;
+    console.log("[AI RESPONSE]", data);
+
     const photoId = newPhoto.id;
 
     const results = [
@@ -126,7 +139,6 @@ exports.analyzePhoto = async (req, res) => {
       });
     }
 
-    // create recommendations
     const recommendationLogic = [
       {
         condition: data.mole_count > 10,
@@ -163,11 +175,11 @@ exports.analyzePhoto = async (req, res) => {
     await Log.create({
       user_id: userId,
       action: "Analyze Photo",
-      description: `User analyzed photo '${req.file.filename}'.`,
+      description: `User analyzed photo '${fileName}'.`,
       timestamp: new Date()
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       summary: {
         acne: data.acne_detected,
         moles: data.mole_count,
@@ -177,7 +189,13 @@ exports.analyzePhoto = async (req, res) => {
       message: "Analysis completed successfully."
     });
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    console.error("[ANALYZE ERROR]", err.message);
+    console.error(err.stack);
+    return res.status(500).send({
+      message: "Error analyzing photo",
+      error: err.message,
+      stack: err.stack
+    });
   }
 };
 

@@ -1,15 +1,25 @@
 module.exports = (sequelize, DataTypes) => {
-    const Comment = sequelize.define("Comment", {
-      user_id: DataTypes.INTEGER,
-      clinic_id: DataTypes.INTEGER,
-      text: DataTypes.TEXT,
-      created_at: DataTypes.DATE
-    });
-  
-    Comment.associate = (models) => {
-      Comment.belongsTo(models.User, { foreignKey: 'user_id' });
-      Comment.belongsTo(models.Clinic, { foreignKey: 'clinic_id' });
-    };
-  
-    return Comment;
+  const Comment = sequelize.define("Comment", {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    text: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    platform_rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
+  }, {
+    tableName: 'Comments',
+    timestamps: true 
+  });
+
+  Comment.associate = (models) => {
+    Comment.belongsTo(models.User, { foreignKey: 'user_id' });
   };
+
+  return Comment;
+};

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-local
+  namespace: dream-aesthetics-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-local
+  template:
+    metadata:
+      labels:
+        app: backend-local
+    spec:
+      containers:
+        - name: backend
+          image: dream-backend-local:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_USER
+              value: root
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_NAME
+              value: dreamdb
+            - name: AI_SERVICE_URL
+              value: http://ai-service:8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-local
+  namespace: dream-aesthetics-ns
+spec:
+  selector:
+    app: backend-local
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP

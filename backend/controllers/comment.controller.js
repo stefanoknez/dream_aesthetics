@@ -1,81 +1,79 @@
 const db = require("../models");
 const Comment = db.Comment;
+const User = db.User;
 
 exports.getAllComments = async (req, res) => {
-    try {
-        const comments = await Comment.findAll();
-        res.json(comments);
-    } catch (err) {
-        res.status(500).send({ message: err.message });
-    }
-};
-
-exports.getCommentById = async (req, res) => {
-    try {
-        const comment = await Comment.findByPk(req.params.id);
-        if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
+  try {
+    const comments = await Comment.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "username"]
         }
-        res.json(comment);
-    } catch (err) {
-        res.status(500).send({ message: err.message });
-    }
+      ],
+      order: [["created_at", "DESC"]]
+    });
+    res.json(comments);
+  } catch (err) {
+    console.error("Error fetching comments:", err);
+    res.status(500).json({ message: "Error fetching comments" });
+  }
 };
 
 exports.createComment = async (req, res) => {
-    try {
-      const { clinic_id, text } = req.body;
-      if (!clinic_id || !text) {
-        return res.status(400).send({ message: "Clinic ID and text are required" });
-      }
-      const newComment = await Comment.create({
-        user_id: req.userId,
-        clinic_id,
-        text,
-        created_at: new Date()
-      });
-  
-      await db.Log.create({
-        user_id: req.userId,
-        action: "Add Comment",
-        description: `User commented on clinic ID ${clinic_id}.`,
-        timestamp: new Date()
-      });
-  
-      res.status(201).json(newComment);
-    } catch (err) {
-      res.status(500).send({ message: err.message });
-    }
-  };
+  try {
+    const { text, platform_rating } = req.body;
 
-exports.updateComment = async (req, res) => {
-    try {
-        const comment = await Comment.findByPk(req.params.id);
-        if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
-        }
-        if (comment.user_id !== req.userId) {
-            return res.status(403).send({ message: "You can update only your own comments" });
-        }
-        await comment.update(req.body);
-        res.json(comment);
-    } catch (err) {
-        res.status(500).send({ message: err.message });
+    if (!text || !platform_rating) {
+      return res.status(400).json({ message: "Text and platform rating are required." });
     }
+
+    const newComment = await Comment.create({
+      user_id: req.userId,
+      text,
+      platform_rating,
+      created_at: new Date()
+    });
+
+    res.status(201).json(newComment);
+  } catch (err) {
+    console.error("Error creating comment:", err);
+    res.status(500).json({ message: "Error creating comment" });
+  }
 };
 
 exports.deleteComment = async (req, res) => {
-    try {
-        const comment = await Comment.findByPk(req.params.id);
-        if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
-        }
-        if (comment.user_id !== req.userId) {
-            return res.status(403).send({ message: "You can delete only your own comments" });
-        }
-        await comment.destroy();
-        res.send({ message: "Comment deleted successfully" });
-    } catch (err) {
-        res.status(500).send({ message: err.message });
+  try {
+    const deleted = await Comment.destroy({
+      where: { id: req.params.id }
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Comment not found" });
     }
+
+    res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    res.status(500).json({ message: "Error deleting comment" });
+  }
+};
+
+exports.bulkDelete = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "Invalid or empty ID list" });
+    }
+
+    const deleted = await Comment.destroy({
+      where: { id: ids }
+    });
+
+    res.json({ message: `Bulk delete successful (${deleted} deleted)` });
+  } catch (err) {
+    console.error("Error bulk deleting comments:", err);
+    res.status(500).json({ message: "Bulk delete failed" });
+  }
 };

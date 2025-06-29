@@ -1,66 +1,59 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const os = require("os");
 
 const app = express();
 
+// CORS opcije — koristi lokalni frontend
 const corsOptions = {
   origin: "http://localhost:5173",
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Statika (slike, fajlovi)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Welcome ruta
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Dream Aesthetics API." });
 });
 
+// Ruta za prikaz hostname-a backend pod-a (korisno za Kubernetes load balancing test)
+app.get("/hostname", (req, res) => {
+  res.send(`Served by pod: ${os.hostname()}`);
+});
+
+// DB konekcija
 const db = require("./models");
 
 db.sequelize.sync({ force: false })
-  .then(() => {
-    console.log("Database synced.");
-  })
-  .catch((err) => {
-    console.error("Failed to sync DB:", err.message || err);
-  });
+  .then(() => console.log("✅ Database synced."))
+  .catch((err) => console.error("❌ Failed to sync DB:", err.message || err));
 
-const authRoutes = require("./routes/auth.routes");
-const clinicRoutes = require("./routes/clinic.routes");
-const cityRoutes = require("./routes/city.routes");
-const appointmentRequestRoutes = require("./routes/appointmentRequest.routes");
-const photoRoutes = require("./routes/photo.routes");
-const analysisResultRoutes = require("./routes/analysisResult.routes");
-const recommendationRoutes = require("./routes/recommendation.routes");
-const treatmentRoutes = require("./routes/treatment.routes");
-const commentRoutes = require("./routes/comment.routes");
-const logRoutes = require("./routes/log.routes");
-const searchRoutes = require("./routes/search.routes");
-const userRoutes = require("./routes/user.routes");
-const fileRoutes = require("./routes/file.routes");
-const clinicAdminRoutes = require("./routes/clinicAdmin.routes");
+// API rute
+require("./routes/auth.routes")(app);
+require("./routes/user.routes")(app);
+app.use("/api/clinics", require("./routes/clinic.routes"));
+app.use("/api/cities", require("./routes/city.routes"));
+app.use("/api/appointments", require("./routes/appointmentRequest.routes"));
+app.use("/api/photos", require("./routes/photo.routes"));
+app.use("/api/analysis-results", require("./routes/analysisResult.routes"));
+app.use("/api/recommendations", require("./routes/recommendation.routes"));
+app.use("/api/treatments", require("./routes/treatment.routes"));
+app.use("/api/comments", require("./routes/comment.routes"));
+app.use("/api/logs", require("./routes/log.routes"));
+app.use("/api/search", require("./routes/search.routes"));
+app.use("/api/files", require("./routes/file.routes"));
+app.use("/api/clinic-admin", require("./routes/clinicAdmin.routes"));
+app.use("/api/support", require("./routes/support.routes"));
 
-authRoutes(app);
-userRoutes(app);
-
-app.use("/api/clinics", clinicRoutes);
-app.use("/api/cities", cityRoutes);
-app.use("/api/appointments", appointmentRequestRoutes);
-app.use("/api/photos", photoRoutes);
-app.use("/api/analysis-results", analysisResultRoutes);
-app.use("/api/recommendations", recommendationRoutes);
-app.use("/api/treatments", treatmentRoutes);
-app.use("/api/comments", commentRoutes);
-app.use("/api/logs", logRoutes);
-app.use("/api/search", searchRoutes);
-app.use("/api/files", fileRoutes);
-app.use("/api/clinic-admin", clinicAdminRoutes);
-
-const PORT = process.env.PORT || 3000;
+// Pokretanje servera
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
